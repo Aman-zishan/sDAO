@@ -268,3 +268,12 @@ dist
 .cache/**
 
 # End of https://www.toptal.com/developers/gitignore/api/node,jetbrains+all,visualstudiocode,macos
+
+# Ignore Node and NPM files. Added by the clarinet-sdk migration.
+logs
+*.log
+npm-debug.log*
+coverage
+*.info
+costs-reports.json
+node_modules
