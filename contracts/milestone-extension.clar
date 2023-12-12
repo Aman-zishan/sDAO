@@ -36,12 +36,12 @@
 
 ;; #[allow(unchecked_params)]
 ;; #[allow(unchecked_data)]
-(define-public (set-milestone (proposal <proposal-trait>) (milestone { id: uint, start-height: uint, end-height: uint, amount: uint }))
+(define-public (set-milestone (proposal principal) (milestone { id: uint, start-height: uint, end-height: uint, amount: uint }))
   (let ((existing-milestones (get-milestones proposal)))
         (try! (is-dao-or-extension))
 
         (map-set grants
-          (contract-of proposal)
+          proposal
           { milestones: (unwrap-panic (as-max-len? (append existing-milestones milestone) u10)) }
         )
 
@@ -51,7 +51,7 @@
 
 ;; #[allow(unchecked_params)]
 ;; #[allow(unchecked_data)]
-(define-public (claim (proposal <proposal-trait>) (milestone-id uint) (recipient principal))
+(define-public (claim (proposal principal) (milestone-id uint) (recipient principal))
   (let 
     (
       (milestone (unwrap! (get-milestone proposal milestone-id) ERR_NO_MILESTONE_FOUND))
@@ -61,9 +61,9 @@
     )
     (try! (is-dao-or-extension))
     ;; checks if the milestone end-height is reached
-    (asserts! (> end-height block-height) ERR_BLOCK_HEIGHT_NOT_REACHED)
-    ;; transfers the STX funds to proposal contract
-    (try! (stx-transfer? amount .treasury recipient))
+    (asserts! (> block-height end-height) ERR_BLOCK_HEIGHT_NOT_REACHED)
+    ;; transfers the STX funds to recipient
+    (try! (as-contract (stx-transfer? amount tx-sender recipient)))
     (ok true)
   )
 )
@@ -77,12 +77,12 @@
 
 ;; read only functions
 ;;
-(define-read-only (get-milestone (proposal <proposal-trait>) (id uint))
+(define-read-only (get-milestone (proposal principal) (id uint))
   (get found (fold find-milestone (get-milestones proposal) { found: none, id: id }))
 )
 
-(define-read-only (get-milestones (proposal <proposal-trait>))
-  (default-to (list) (get milestones (map-get? grants (contract-of proposal))))
+(define-read-only (get-milestones (proposal principal))
+  (default-to (list) (get milestones (map-get? grants proposal)))
 )
 
 ;; private functions
