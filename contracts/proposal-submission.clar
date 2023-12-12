@@ -24,12 +24,22 @@
 ;;
 (define-map parameters (string-ascii 34) uint)
 
+(map-set parameters "proposal-duration" u1440) ;; ~10 days based on a ~10 minute block time.
+
 ;; public functions
 ;;
-
-
 (define-public (is-dao-or-extension)
   (ok (asserts! (or (is-eq tx-sender .core) (contract-call? .core is-extension contract-caller)) ERR_UNAUTHORIZED))
+)
+
+;; #[allow(unchecked_params)]
+;; #[allow(unchecked_data)]
+(define-public (set-parameter (parameter (string-ascii 34)) (value uint))
+	(begin
+		(try! (is-dao-or-extension))
+		(try! (get-parameter parameter))
+		(ok (map-set parameters parameter value))
+	)
 )
 
 (define-public (propose (proposal <proposal-trait>) (title (string-ascii 50)) (description (string-utf8 500)))

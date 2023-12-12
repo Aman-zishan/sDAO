@@ -30,6 +30,16 @@ path = 'contracts/membership-token.clar'
 clarity_version = 2
 epoch = 2.1
 
+[contracts.milestone-extension]
+path = 'contracts/milestone-extension.clar'
+clarity_version = 2
+epoch = 2.1
+
+[contracts.milestone-extension-proposal]
+path = 'contracts/milestone-extension-proposal.clar'
+clarity_version = 2
+epoch = 2.1
+
 [contracts.proposal-submission]
 path = 'contracts/proposal-submission.clar'
 clarity_version = 2
@@ -42,6 +52,11 @@ epoch = 2.1
 
 [contracts.proposal-voting]
 path = 'contracts/proposal-voting.clar'
+clarity_version = 2
+epoch = 2.1
+
+[contracts.treasury]
+path = 'contracts/treasury.clar'
 clarity_version = 2
 epoch = 2.1
 [repl.analysis]

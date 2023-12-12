@@ -8,6 +8,12 @@
 ;;
 (impl-trait .proposal-trait.proposal-trait)
 
+;; constants
+;;
+(define-constant ERR_INSUFFICIENT_BALANCE (err u2001))
+;; 1M STX for grants allocation
+(define-constant grant-fund u1000000000000)
+
 ;; token definitions
 ;; 
 
@@ -17,6 +23,13 @@
 		(try! (contract-call? .core set-extension .membership-token true))
         (try! (contract-call? .core set-extension .proposal-voting true))
         (try! (contract-call? .core set-extension .proposal-submission true))
+        (try! (contract-call? .core set-extension .treasury true))
+
+        ;; fund treasury with 1M STX, further treasury refills can be done via proposals
+        ;; the core contract should be having 1M STX balance
+        (asserts! (>= (stx-get-balance tx-sender) grant-fund) ERR_INSUFFICIENT_BALANCE)
+        (try! (stx-transfer? grant-fund .core .treasury))
+
 
 		;; Mint initial token supply.
         (try! (contract-call? .membership-token mint u1000 sender))
