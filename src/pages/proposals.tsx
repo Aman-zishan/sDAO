@@ -88,7 +88,7 @@ const Proposals = () => {
             proposal.proposal_name
           );
           return {
-            address: proposal.address,
+            address: proposalData.proposer.value,
             proposal_name: proposal.proposal_name,
             concluded: proposalData.concluded.value,
             passed: proposalData.passed.value,
@@ -130,14 +130,14 @@ const Proposals = () => {
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
                   >
-                    Your Proposals
+                    Your Proposals ({proposals.length})
                   </Tab>
                   <Tab
                     id="allProposals"
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
                   >
-                    All Proposals
+                    All Proposals ({allProposals.length})
                   </Tab>
                 </ul>
                 <div className="p-4 pt-10">
@@ -147,6 +147,7 @@ const Proposals = () => {
                         {proposals.map((proposal) => {
                           return (
                             <ProposalCard
+                              address={proposal.address}
                               contractName={proposal.proposal_name}
                               title={proposal.title}
                               passed={proposal.passed}
@@ -164,6 +165,7 @@ const Proposals = () => {
                         {allProposals.map((proposal) => {
                           return (
                             <ProposalCard
+                              address={proposal.address}
                               contractName={proposal.proposal_name}
                               title={proposal.title}
                               passed={proposal.passed}

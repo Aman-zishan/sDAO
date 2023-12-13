@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react';
 import LeftMenu from '../components/leftMenu';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import {
   contractPrincipalCV,
   callReadOnlyFunction,
-  cvToValue
+  cvToValue,
+  FungibleConditionCode,
+  boolCV,
+  makeContractSTXPostCondition,
+  uintCV
 } from '@stacks/transactions';
-import { useAccount, useAuth } from '@micro-stacks/react';
+import { useAccount, useAuth, useOpenContractCall } from '@micro-stacks/react';
 import { truncateAddress } from '../lib/utils';
 
 type individualValue = {
@@ -25,11 +29,75 @@ type ProposalType = {
   'votes-for': individualValue;
 };
 const ProposalPage = () => {
-  const { slug } = useParams();
+  const { search } = useLocation();
+  const query = new URLSearchParams(search);
+  const paramAddress = query.get('address');
+  const paramContractName = query.get('contractName');
   const [vote, setVote] = React.useState('');
+  const [voteFor, setVoteFor] = React.useState('FOR');
   const { isSignedIn } = useAuth();
   const { stxAddress } = useAccount();
   const [proposalInfo, setProposalInfo] = React.useState<ProposalType>();
+
+  const { openContractCall } = useOpenContractCall();
+
+  const voteForProposal = async () => {
+    const voteStatus = voteFor === 'FOR' ? true : false;
+    const functionArgs = [
+      uintCV(vote),
+      boolCV(voteStatus),
+      contractPrincipalCV(paramAddress!, paramContractName!)
+    ];
+    await openContractCall({
+      contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
+      contractName: 'proposal-voting',
+      functionName: 'vote',
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      functionArgs,
+
+      onFinish: async (data: any) => {
+        console.log('finished contract call!', data);
+      },
+      onCancel: () => {
+        console.log('popup closed!');
+      }
+    });
+  };
+
+  const concludeProposal = async () => {
+    const postConditions = [
+      makeContractSTXPostCondition(
+        'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
+        'milestone-exntension',
+        FungibleConditionCode.LessEqual,
+        1000000000000n
+      )
+    ];
+    const functionArgs = [
+      contractPrincipalCV(paramAddress!, paramContractName!)
+    ];
+    await openContractCall({
+      contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
+      contractName: 'proposal-voting',
+      functionName: 'conclude',
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      functionArgs,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      postConditions,
+
+      onFinish: async (data: any) => {
+        console.log('finished contract call!', data);
+      },
+      onCancel: () => {
+        console.log('popup closed!');
+      }
+    });
+  };
 
   const fetchProposalInfo = async (address: string, contractName: string) => {
     if (isSignedIn) {
@@ -56,6 +124,7 @@ const ProposalPage = () => {
     address: string,
     contractName: string
   ) => {
+    console.log('fetching milestones', address, contractName);
     if (isSignedIn) {
       try {
         const functionArgs = [contractPrincipalCV(address, contractName)];
@@ -68,7 +137,7 @@ const ProposalPage = () => {
           senderAddress: stxAddress!
         });
 
-        console.log(cvToValue(result).value);
+        console.log(cvToValue(result));
       } catch (error) {
         console.error('Failed to fetch balance:', error);
       }
@@ -76,8 +145,8 @@ const ProposalPage = () => {
   };
 
   useEffect(() => {
-    fetchProposalInfo(stxAddress!, slug!);
-    fetchProposalMilestoneInfo(stxAddress!, slug!);
+    fetchProposalInfo(paramAddress!, paramContractName!);
+    fetchProposalMilestoneInfo(paramAddress!, paramContractName!);
   }, []);
 
   return (
@@ -88,7 +157,7 @@ const ProposalPage = () => {
         <div className="px-6 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-3xl p-8 mb-5">
-              <h1 className="text-3xl font-bold mb-10">{`Proposal ${slug}`}</h1>
+              <h1 className="text-3xl font-bold mb-10">{`Proposal ${paramContractName}`}</h1>
 
               <hr className="my-10" />
               <div className="flex items-center justify-between">
@@ -104,13 +173,29 @@ const ProposalPage = () => {
                     placeholder="vote number"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   />
+                  <select
+                    required
+                    onChange={(e) => setVoteFor(e.target.value)}
+                    id="default-input"
+                    placeholder="vote number"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  >
+                    <option value="FOR">FOR</option>
+                    <option value="AGAINST">AGAINST</option>
+                  </select>
                   <button
                     type="button"
+                    onClick={async () => {
+                      voteForProposal();
+                    }}
                     className="inline-flex items-center justify-center h-9 px-5 rounded-xl bg-gray-900 text-gray-300 hover:text-white text-sm font-semibold transition"
                   >
                     Vote
                   </button>
                   <button
+                    onClick={async () => {
+                      concludeProposal();
+                    }}
                     type="button"
                     className="inline-flex items-center justify-center h-9 px-5 rounded-xl bg-gray-900 text-gray-300 hover:text-white text-sm font-semibold transition"
                   >

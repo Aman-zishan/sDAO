@@ -21,8 +21,8 @@ const initialContractBoilerplate = `;; This is a boilerplate contract for a gran
 
 (define-public (execute (sender principal))
 	(begin
-		(try! (contract-call? .milestone-extension set-milestone (as-contract tx-sender) {id: u1, start-height: block-height, end-height: (+ block-height u1440), amount: u100000000} ))
-        (try! (contract-call? .milestone-extension set-milestone (as-contract tx-sender) {id: u2, start-height: (+ block-height u2880), end-height: u4320, amount: u100000000} ))
+		(try! (contract-call? .milestone-extension set-milestone (as-contract tx-sender) {id: u1, start-height: block-height, end-height: (+ block-height u2), amount: u100000000} ))
+        (try! (contract-call? .milestone-extension set-milestone (as-contract tx-sender) {id: u2, start-height: (+ block-height u2), end-height: (+ block-height u4), amount: u100000000} ))
         (ok true)
 	)
 )
