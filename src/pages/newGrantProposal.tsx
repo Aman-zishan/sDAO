@@ -1,14 +1,26 @@
-import React, { useEffect } from 'react';
-import LeftMenu from '../components/leftMenu';
-import CodeEditor from '../components/codeEditor';
-import { loader, Editor } from '@monaco-editor/react';
 import { useOpenContractDeploy } from '@micro-stacks/react';
+import React from 'react';
 import { toast } from 'sonner';
+import CodeEditor from '../components/codeEditor';
+import LeftMenu from '../components/leftMenu';
+
+const initialContractBoilerplate = `;; This is a boilerplate contract for a grant proposal\n
+(impl-trait .proposal-trait.proposal-trait)
+
+(define-public (execute (sender principal))
+	(begin
+		(try! (contract-call? .milestone-extension set-milestone (as-contract tx-sender) {id: u1, start-height: block-height, end-height: (+ block-height u1440), amount: u100000000} ))
+        (try! (contract-call? .milestone-extension set-milestone (as-contract tx-sender) {id: u2, start-height: (+ block-height u2880), end-height: u4320, amount: u100000000} ))
+        (ok true)
+	)
+)
+  `;
 
 const NewGrantProposal = () => {
   const [code, setCode] = React.useState('');
   const [contractName, setContractName] = React.useState('');
   const [response, setResponse] = React.useState('');
+
   const { openContractDeploy, isRequestPending } = useOpenContractDeploy();
   const handleCodeChange = (code) => {
     console.log('Code in parent component:', code);
@@ -17,10 +29,18 @@ const NewGrantProposal = () => {
   };
 
   const onDeploy = async () => {
+    console.log('deploying contract', code);
+
+    if (!code) {
+      alert('contract code required');
+      return;
+    }
+
     await openContractDeploy({
       contractName: contractName,
       // the clarity contract above
       codeBody: code,
+
       onFinish: async (data: any) => {
         console.log('finished contract deploy!', data);
         setResponse(data);
@@ -51,7 +71,10 @@ const NewGrantProposal = () => {
                 <p>You can list the milestones when you apply for a grant</p>
               </div>
 
-              <CodeEditor onCodeChange={handleCodeChange}></CodeEditor>
+              <CodeEditor
+                initialCode={initialContractBoilerplate}
+                onCodeChange={handleCodeChange}
+              ></CodeEditor>
 
               <form
                 onSubmit={(e) => {

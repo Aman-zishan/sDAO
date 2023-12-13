@@ -6,6 +6,8 @@
 
 ;; traits
 ;;
+(impl-trait .proposal-trait.proposal-trait)
+
 
 ;; token definitions
 ;; 

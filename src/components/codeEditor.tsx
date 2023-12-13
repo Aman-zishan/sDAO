@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Editor, loader } from '@monaco-editor/react';
 
-const CodeEditor = ({ onCodeChange }: any) => {
+const CodeEditor = ({ onCodeChange, initialCode }: any) => {
   function handleEditorChange(value, event) {
     console.log('here is the current model value:', value);
     if (onCodeChange) {
@@ -24,7 +24,7 @@ const CodeEditor = ({ onCodeChange }: any) => {
 
           // Keywords
           [
-            /\b(define-data-var|define-public|define-private|define-read-only|define-constant|begin|let|if|map-set|map-get\?|and|or|not|is-eq|unwrap-panic|unwrap-err-panic|unwrap-err!|unwrap!|asserts!|try!|ok|err)\b/,
+            /\b(contract-call?|impl-trait|define-data-var|define-public|define-private|define-read-only|define-constant|begin|let|if|map-set|map-get\?|and|or|not|is-eq|unwrap-panic|unwrap-err-panic|unwrap-err!|unwrap!|asserts!|try!|ok|err)\b/,
             'keyword'
           ],
 
@@ -57,17 +57,7 @@ const CodeEditor = ({ onCodeChange }: any) => {
       height="50vh"
       theme="vs-dark"
       defaultLanguage="clarity" // Set to use the custom Clarity language
-      defaultValue="(define-data-var count int 0)
-(define-public (add-number (number int))
-    (let
-        (
-            (current-count count)
-        )
-
-        (var-set count (+ 1 number))
-        (ok (var-get count))
-    )
-)"
+      defaultValue={initialCode}
       onChange={handleEditorChange}
     />
   );

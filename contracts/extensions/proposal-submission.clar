@@ -24,7 +24,9 @@
 ;;
 (define-map parameters (string-ascii 34) uint)
 
-(map-set parameters "proposal-duration" u1440) ;; ~10 days based on a ~10 minute block time.
+;; VERY_IMPORTANT: this is a test value and ideally the proposal-duration could be u1440 ~10 days (10 minutes per block)
+(map-set parameters "proposal-duration" u1) ;; 1 block ~ 10 minutes (for testing) 
+
 
 ;; public functions
 ;;

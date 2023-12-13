@@ -1,3 +1,4 @@
+;; onchain testing ground
 (define-map grants
   principal
   { milestones: (list 10 { id: uint, start-height: uint, end-height: uint, amount: uint }) }

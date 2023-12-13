@@ -34,6 +34,12 @@ const LeftMenu = () => {
                 </NavLink>
               </li> */}
               <li>
+                <NavLink to={'/my-proposals'} className={getNavLinkClass}>
+                  <img src="../assets/proposals.png" alt="" width={50} />
+                  My proposals
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to={'/new-proposal'} className={getNavLinkClass}>
                   <img src="../assets/proposal.png" alt="" width={50} />
                   New grant proposal
@@ -45,6 +51,14 @@ const LeftMenu = () => {
                   Claim milestones
                 </NavLink>
               </li>
+              {stxAddress === 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM' && (
+                <li>
+                  <NavLink to={'/bootstrap'} className={getNavLinkClass}>
+                    <img src="../assets/bootstrap.png" alt="" width={50} />
+                    Bootstrap DAO
+                  </NavLink>
+                </li>
+              )}
             </ul>
           </div>
         </div>
