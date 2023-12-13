@@ -34,9 +34,9 @@ const LeftMenu = () => {
                 </NavLink>
               </li> */}
               <li>
-                <NavLink to={'/my-proposals'} className={getNavLinkClass}>
+                <NavLink to={'/proposals'} className={getNavLinkClass}>
                   <img src="../assets/proposals.png" alt="" width={50} />
-                  My proposals
+                  Proposals
                 </NavLink>
               </li>
               <li>

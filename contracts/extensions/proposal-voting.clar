@@ -108,6 +108,10 @@
   (default-to u0 (map-get? member-total-votes {proposal: proposal, voter: voter}))
 )
 
+(define-read-only (get-proposal-data (proposal principal))
+	(map-get? proposals proposal)
+)
+
 ;; private functions
 ;;
 

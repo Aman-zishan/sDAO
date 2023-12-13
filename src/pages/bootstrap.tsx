@@ -15,13 +15,32 @@ import { useAtom } from 'jotai';
 import React from 'react';
 import LeftMenu from '../components/leftMenu';
 import { bootStrapAtom } from '../store/stateStore';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  import.meta.env.VITE_SUPABASE_PROJECT_URL,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 const Bootstrap = () => {
   const [step, setStep] = useAtom(bootStrapAtom);
   const { openStxTokenTransfer } = useOpenStxTokenTransfer();
   const { openContractCall } = useOpenContractCall();
 
+  const saveSubjectToDB = async (address: string, contract: string) => {
+    const { error } = await supabase
+      .from('proposals')
+      .insert({ address: address, proposal_name: contract });
+  };
+
   const handleTokenTransfer = async () => {
+    if (step === 1) {
+      return;
+    }
     openStxTokenTransfer({
       recipient: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.core',
       amount: 1000000000000n, //1M STX
@@ -30,6 +49,9 @@ const Bootstrap = () => {
     setStep(1);
   };
   const constructBootstrap = async () => {
+    if (step === 2) {
+      return;
+    }
     const functionArgs = [
       contractPrincipalCV(
         'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
@@ -56,6 +78,9 @@ const Bootstrap = () => {
   };
 
   const proposeMilestoneExtension = async () => {
+    if (step === 3) {
+      return;
+    }
     const functionArgs = [
       contractPrincipalCV(
         'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
@@ -75,6 +100,10 @@ const Bootstrap = () => {
 
       onFinish: async (data: any) => {
         console.log('finished contract call!', data);
+        saveSubjectToDB(
+          'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
+          'milestone-extension-proposal'
+        );
         setStep(3);
       },
       onCancel: () => {
@@ -84,6 +113,9 @@ const Bootstrap = () => {
   };
 
   const voteForMilestoneExtension = async () => {
+    if (step === 4) {
+      return;
+    }
     const functionArgs = [
       uintCV(100),
       boolCV(true),
@@ -112,6 +144,9 @@ const Bootstrap = () => {
   };
 
   const concludeMilestoneExtension = async () => {
+    if (step === 5) {
+      return;
+    }
     const postConditions = [
       makeContractSTXPostCondition(
         'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
