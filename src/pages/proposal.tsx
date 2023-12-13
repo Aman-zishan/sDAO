@@ -38,6 +38,7 @@ const ProposalPage = () => {
   const { isSignedIn } = useAuth();
   const { stxAddress } = useAccount();
   const [proposalInfo, setProposalInfo] = React.useState<ProposalType>();
+  const [milestoneInfo, setMilestoneInfo] = React.useState<any>();
 
   const { openContractCall } = useOpenContractCall();
 
@@ -138,6 +139,7 @@ const ProposalPage = () => {
         });
 
         console.log(cvToValue(result));
+        setMilestoneInfo(cvToValue(result));
       } catch (error) {
         console.error('Failed to fetch balance:', error);
       }
@@ -240,6 +242,29 @@ const ProposalPage = () => {
                     </div>
                   </div>
                 </div>
+
+                {milestoneInfo && (
+                  <div>
+                    <h2 className="text-2xl font-bold mb-4 mt-4">
+                      Milestones ({milestoneInfo.length})
+                    </h2>
+                    <div className="flex flex-col h-[200px] max-h-[500px] overflow-scroll gap-10">
+                      {milestoneInfo.map((milestone: any) => (
+                        <div className="grid grid-cols gap-4">
+                          <div className="flex p-4 bg-blue-200 rounded-xl text-gray-800 gap-5">
+                            <div className="font-bold text-xl leading-none">
+                              milestone ID : {milestone.value.id.value}
+                            </div>
+                            <div className="font-bold text-xl leading-none">
+                              Amount : {milestone.value.amount.value / 1000000}{' '}
+                              STX
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
