@@ -1,27 +1,4 @@
 #V2
-(stx-get-balance tx-sender)
-(stx-transfer? u1000000000000 tx-sender .core)
-::get_asset_map
-::get_asset_maps
-::get_assets_maps
-(contract-call? .core construct .bootstrap)
-(as-contract stx-get-balance .core)
-(as-contract (stx-get-balance .core))
-(stx-get-balance .core)
-(stx-transfer? u1000000000000 tx-sender .core)
-(contract-call? .core construct .bootstrap)
-::get_assets_maps
-(contract-call? .proposal-submission propose .milestone-extension-proposal)
-(contract-call? .proposal-submission propose .milestone-extension-proposal "extension for milestone based funding" "same as title")
-(contract-call? .proposal-submission propose .milestone-extension-proposal "extension for milestone based funding" same as title)
-(contract-call? .proposal-submission propose .milestone-extension-proposal u"extension for milestone based funding" u"same as title")
-(contract-call? .proposal-submission propose .milestone-extension-proposal "extension for milestone based funding" u"same as title")
-(contract-call? .proposal-voting vote u100 true .milestone-extension-proposal)
-::get_assets_maps
-(contract-call? .proposal-voting conclude .milestone-extension-proposal)
-::advance_chain_tip 1440
-(contract-call? .proposal-voting conclude .milestone-extension-proposal)
-(stx-transfer? u1000000000000 tx-sender .core)
 (contract-call? .core construct .bootstrap)
 (contract-call? .proposal-submission propose .milestone-extension-proposal "extension for milestone based funding" u"same as title")
 ::advance_chain_tip 1440
@@ -99,3 +76,26 @@ block_height
 (contract-call? .proposal-voting vote u100 true .grant-milestone-claim-proposal)
 ::advance_chain_tip 1440
 (contract-call? .proposal-voting conclude .grant-milestone-claim-proposal)
+(stx-transfer? u1000000000000 tx-sender .core)
+(contract-call? .core construct .bootstrap)
+(contract-call? .proposal-submission propose .milestone-extension-proposal)
+(contract-call? .proposal-submission propose .milestone-extension-proposal "extension for milestone based funding" u"same as title")
+(contract-call? .proposal-voting vote u100 true .milestone-extension-proposal)
+::advance_chain_tip 1440
+(contract-call? .proposal-voting conclude .milestone-extension-proposal)
+::get_assets_maps
+(contract-call? .proposal-submission propose .grant-proposal "friend.tech grant" u"a clone social media app")
+(contract-call? .proposal-voting vote u100 true .grant-proposal)
+(contract-call? .grant-proposal get-milestones ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.grant-proposal)\n
+(contract-call? .milestone-extension  get-milestones ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.grant-proposal)\n
+(contract-call? .milestone-extension  get-milestones 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.grant-proposal)\n
+::advance_chain_tip 1440
+(contract-call? .proposal-voting conclude .grant-proposal)
+(contract-call? .milestone-extension  get-milestones 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.grant-proposal)\n
+(contract-call? .proposal-submission propose .grant-milestone-claim-proposal "test grant claim proposal" u"same as title")\n
+::get_block_height
+(contract-call? .milestone-extension  get-milestones 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.grant-proposal)\n
+::advance_chain_tip 14400
+(contract-call? .proposal-voting vote u100 true .grant-milestone-claim-proposal)
+(contract-call? .proposal-voting conclude .grant-milestone-claim-proposal)
+::get_assets_maps
