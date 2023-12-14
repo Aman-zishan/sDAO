@@ -1,4 +1,8 @@
-import { useAccount, useOpenContractDeploy } from '@micro-stacks/react';
+import {
+  useAccount,
+  useOpenContractCall,
+  useOpenContractDeploy
+} from '@micro-stacks/react';
 import React from 'react';
 import { toast } from 'sonner';
 import CodeEditor from '../components/codeEditor';
@@ -8,7 +12,7 @@ import {
   stringAsciiCV,
   stringUtf8CV
 } from '@stacks/transactions';
-import { openContractCall } from '@stacks/connect';
+
 import { createClient } from '@supabase/supabase-js';
 
 const initialContractBoilerplate = `;; This is a boilerplate contract for a grant milestone claim proposal\n
@@ -43,6 +47,9 @@ const NewClaimProposal = () => {
   const [description, setDescription] = React.useState('');
   const [response, setResponse] = React.useState('');
   const [deployed, setDeployed] = React.useState(false);
+
+  const { openContractCall, isRequestPending: isProposeReqPending } =
+    useOpenContractCall();
 
   const { openContractDeploy, isRequestPending } = useOpenContractDeploy();
   const { stxAddress } = useAccount();

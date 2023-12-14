@@ -5,11 +5,14 @@ import {
   contractPrincipalCV,
   callReadOnlyFunction,
   cvToValue,
-  FungibleConditionCode,
   boolCV,
-  makeContractSTXPostCondition,
   uintCV
 } from '@stacks/transactions';
+import {
+  makeStandardSTXPostCondition,
+  makeContractSTXPostCondition,
+  FungibleConditionCode
+} from 'micro-stacks/transactions';
 import { useAccount, useAuth, useOpenContractCall } from '@micro-stacks/react';
 import { truncateAddress } from '../lib/utils';
 
@@ -71,14 +74,15 @@ const ProposalPage = () => {
     const postConditions = [
       makeContractSTXPostCondition(
         'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-        'milestone-exntension',
-        FungibleConditionCode.LessEqual,
-        1000000000000n
+        'milestone-extension',
+        FungibleConditionCode.GreaterEqual,
+        1n
       )
     ];
     const functionArgs = [
       contractPrincipalCV(paramAddress!, paramContractName!)
     ];
+
     await openContractCall({
       contractAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
       contractName: 'proposal-voting',
@@ -87,9 +91,10 @@ const ProposalPage = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       functionArgs,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      postConditions,
+
+      postConditions: paramContractName?.includes('claim')
+        ? postConditions
+        : undefined,
 
       onFinish: async (data: any) => {
         console.log('finished contract call!', data);
